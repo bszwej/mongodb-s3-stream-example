@@ -1,4 +1,4 @@
-# Streaming collection from MongoDB to S3 using Akka Streams
+# Streaming MongoDB collection to S3 using Akka Streams
 
 This is an example of using Akka Streams and Alpakka to stream the whole MongoDB collection to Amazon S3.
 
