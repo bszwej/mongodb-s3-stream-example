@@ -12,9 +12,11 @@ import scala.concurrent.Future
 
 class Stream(collection: MongoCollection[Document], s3Client: S3Client, bucket: String, key: String) {
 
-  def run(implicit m: Materializer) = runStream(s3Sink)
+  def run(implicit m: Materializer): Future[MultipartUploadResult] =
+    runStream(s3Sink)
 
-  def runWithEncryption(implicit m: Materializer) = runStream(s3SinkWithEncryption)
+  def runWithEncryption(implicit m: Materializer): Future[MultipartUploadResult] =
+    runStream(s3SinkWithEncryption)
 
   private def runStream(sink: Sink[ByteString, Future[MultipartUploadResult]])(implicit m: Materializer) =
     Source.fromPublisher(collection.find())
