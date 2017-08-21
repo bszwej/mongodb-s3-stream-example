@@ -1,19 +1,16 @@
-package io.bszwej.restore
+package io.bszwej
 
-import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.alpakka.s3.auth.AWSCredentials
 import akka.stream.alpakka.s3.scaladsl.S3Client
-import akka.stream.scaladsl.Source
-import akka.util.ByteString
+import akka.stream.scaladsl.{Sink, Source}
 import com.mongodb.reactivestreams.client.{MongoClients, MongoCollection}
-import io.bszwej.Configuration
 import org.bson.Document
 
 import scala.util.{Failure, Success}
 
-object Restore extends App with Configuration {
+object Main extends App with Configuration {
 
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
@@ -23,25 +20,30 @@ object Restore extends App with Configuration {
   val s3Client: S3Client =
     S3Client(AWSCredentials(awsAccessKeyId, awsAccessSecretKey), awsRegion)
 
-  val s3Source: Source[ByteString, NotUsed] = s3Client.download(bucket, fileName)
-
   val collection: MongoCollection[Document] =
     MongoClients.create
       .getDatabase(mongoDatabase)
       .getCollection(mongoCollection)
 
-  val maximumObjectLength = 16000000
-  val bulkSize = 100
-  val result = new RestoreStream(collection, s3Client, bucket, fileName).run
+  val backupStream = new BackupStream(collection, s3Client, bucket, fileName)
+  val restoreStream = new RestoreStream(collection, s3Client, bucket, fileName)
+
+  val result = for {
+    _ ← backupStream.runWithEncryption
+    _ ← Source.fromPublisher(collection.drop()).runWith(Sink.ignore)
+    r ← restoreStream.run
+  } yield r
 
   result.onComplete {
     case Success(_) ⇒
-      println(s"Restore ended successfully!")
+      println(s"Backup, collection drop and restore ended successfully!")
 
     case Failure(e) ⇒
-      println(s"Restore failed. Message: '${e.getMessage}")
+      println(s"Backup, collection drop or restore failed. Message: '${e.getMessage}")
   }
 
+  // If you're worried about AbruptTerminationException
+  // see: https://github.com/akka/alpakka/issues/203
   result.onComplete(_ ⇒ system.terminate())
 
 }
