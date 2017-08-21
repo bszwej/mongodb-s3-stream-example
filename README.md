@@ -15,7 +15,13 @@ This example contains a full runnable code presented in a two-part article:
 
 ## Running
 
-In order to run the stream:
+The scenario located in `Main` is the following:
+
+1. Perform backup to S3.
+1. Drop the collection.
+1. Perform restore operation.
+
+In order to run it:
 
 1. Go to `application.conf` and fill the missing properties.
 
@@ -30,12 +36,21 @@ In order to run the stream:
     ```sh
     docker run -it --net host --rm mongo sh -c 'exec mongo "localhost:27017"'
     ```
+    
+    Insert a document:
+    ```sh
+    > use CookieDB
+    switched to db CookieDB
+    
+    > db.cookies.insert({"name" : "cookie1", "delicious" : true})
+    WriteResult({ "nInserted" : 1 })
+    ```
 
-3. `sbt run` and choose backup or restore.
+3. `sbt run`
 
 ## MongoDB basics
 
-The block below presents a basic set of MongoDB commands useful when playing with backup/restore streams.
+The following block presents a basic set of MongoDB commands useful when playing with backup/restore streams.
 
 ```sh
 > show dbs
