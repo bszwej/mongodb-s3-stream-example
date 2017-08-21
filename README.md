@@ -1,10 +1,15 @@
-# Streaming MongoDB collection to S3 using Akka Streams
+# MongoDB backup and restore to/from Amazon S3 using Akka Streams
 
-This is an example of using Akka Streams and Alpakka to stream the whole MongoDB collection to Amazon S3.
+This is an example of using Akka Streams and Alpakka to stream:
+ - MongoDB collection to Amazon S3.
+ - file containing Extended JSONs to MongoDB collection.
 
-This example contains a full runnable code presented in [this blog post](https://medium.com/@bszwej/crafting-production-ready-backup-as-a-service-solution-using-akka-streams-130725df20cb).
 
-It uses the following dependencies:
+This example contains a full runnable code presented in a two-part article:
+ - [Crafting production-ready Backup as a Service solution using Akka Streams](https://medium.com/@bszwej/crafting-production-ready-backup-as-a-service-solution-using-akka-streams-130725df20cb)
+- [Crafting production-ready Backup as a Service solution using Akka Streams: part 2](https://medium.com/@bszwej/crafting-production-ready-backup-as-a-service-solution-using-akka-streams-130725df20cb).
+
+## Ingredients
 - akka-stream
 - akka-stream-alpakka-s3
 - mongodb-driver-reactivestreams
@@ -17,4 +22,39 @@ In order to run the stream:
 
 2. Run your MongoDB locally and prepare the database and collection with some documents. You can quickly [run MongoDB as well as MongoShell using Docker](https://hub.docker.com/_/mongo/).
 
-3. `sbt run`
+    Run MongoDB:
+    ```sh
+    docker run -p 27017:27017 --name backup-mongo -d mongo
+    ```
+    
+    Run Mongo shell:
+    ```sh
+    docker run -it --net host --rm mongo sh -c 'exec mongo "localhost:27017"'
+    ```
+
+3. `sbt run` and choose backup or restore.
+
+## MongoDB basics
+
+Blocks below present basic MongoDB command you can use when playing with backup/restore streams.
+
+```sh
+> show dbs
+admin  0.000GB
+local  0.000GB
+
+> use CookieDB
+switched to db CookieDB
+
+> db.cookies.insert({"name" : "cookie1", "delicious" : true})
+WriteResult({ "nInserted" : 1 })
+
+> show collections
+cookies
+
+> db.cookies.find()
+{ "_id" : ObjectId("599b0d9a266a67c9516e0245"), "name" : "cookie1", "delicious" : true }
+
+> db.dropDatabase()
+{ "dropped" : "CookieDB", "ok" : 1 }
+```

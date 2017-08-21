@@ -1,4 +1,4 @@
-package io.bszwej
+package io.bszwej.backup
 
 import akka.stream.Materializer
 import akka.stream.alpakka.s3.impl.{S3Headers, ServerSideEncryption}
@@ -10,7 +10,7 @@ import org.bson.Document
 
 import scala.concurrent.Future
 
-class Stream(collection: MongoCollection[Document], s3Client: S3Client, bucket: String, key: String) {
+class BackupStream(collection: MongoCollection[Document], s3Client: S3Client, bucket: String, key: String) {
 
   def run(implicit m: Materializer): Future[MultipartUploadResult] =
     runStream(s3Sink)
@@ -19,8 +19,8 @@ class Stream(collection: MongoCollection[Document], s3Client: S3Client, bucket: 
     runStream(s3SinkWithEncryption)
 
   private def runStream(sink: Sink[ByteString, Future[MultipartUploadResult]])(implicit m: Materializer) =
-    Source.fromPublisher(collection.find())
-      .map(_.toJson())
+    Source.fromPublisher(collection.find)
+      .map(_.toJson)
       .map(ByteString(_))
       .via(Compression.gzip)
       .runWith(sink)

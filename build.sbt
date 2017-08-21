@@ -4,7 +4,7 @@ version := "1.0"
 
 scalaVersion := "2.12.3"
 
-val akkaVersion = "2.5.3"
+val akkaVersion = "2.5.4"
 val alpakkaVersion = "0.11"
 val mongoDriverVersion = "1.5.0"
 
