@@ -16,9 +16,10 @@ class RestoreStream(collection: MongoCollection[Document], s3Client: S3Client, b
   private val maximumObjectLength = 16000000
   private val bulkSize = 100
 
-  def run(implicit m: Materializer) =
-    s3Client
-      .download(bucket, fileName)
+  def run(implicit m: Materializer) = {
+    val (s3Source, _) = s3Client.download(bucket, fileName)
+
+    s3Source
       .via(Compression.gunzip())
       .via(JsonFraming.objectScanner(maximumObjectLength))
       .map((json: ByteString) ⇒ Document.parse(json.utf8String))
@@ -28,5 +29,5 @@ class RestoreStream(collection: MongoCollection[Document], s3Client: S3Client, b
         Source.fromPublisher(collection.bulkWrite(docs.toList.asJava))
       }
       .runWith(Sink.ignore)
-
+  }
 }

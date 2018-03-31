@@ -1,12 +1,12 @@
-name := "mongo-s3-backup"
+name := "mongodb-s3-stream-example"
 
 version := "1.0"
 
-scalaVersion := "2.12.3"
+scalaVersion := "2.12.5"
 
-val akkaVersion = "2.5.4"
-val alpakkaVersion = "0.11"
-val mongoDriverVersion = "1.5.0"
+val akkaVersion = "2.5.11"
+val alpakkaVersion = "0.18"
+val mongoDriverVersion = "1.7.1"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream" % akkaVersion,
@@ -14,5 +14,7 @@ libraryDependencies ++= Seq(
   "org.mongodb" % "mongodb-driver-reactivestreams" % mongoDriverVersion
 )
 
-dependencyOverrides += "com.typesafe.akka" %% "akka-stream" % akkaVersion
-dependencyOverrides += "com.typesafe.akka" %% "akka-actor" % akkaVersion
+dependencyOverrides ++= Seq(
+  "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+  "com.typesafe.akka" %% "akka-actor" % akkaVersion
+)

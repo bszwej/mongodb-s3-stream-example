@@ -34,4 +34,5 @@ class BackupStream(collection: MongoCollection[Document], s3Client: S3Client, bu
       key = fileName,
       s3Headers = Some(S3Headers(ServerSideEncryption.AES256))
     )
+
 }

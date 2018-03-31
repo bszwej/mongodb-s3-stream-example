@@ -1,17 +1,18 @@
 # MongoDB backup and restore to/from Amazon S3 using Akka Streams
 
 This is an example of using Akka Streams and Alpakka to stream:
- - MongoDB collection to S3.
- - File containing Extended JSONs stored on S3 to MongoDB collection.
+ - MongoDB collection to AWS S3.
+ - File containing Extended JSONs stored on AWS S3 to MongoDB collection.
 
 This example contains a full runnable code presented in a two-part article:
  - [Crafting production-ready Backup as a Service solution using Akka Streams](https://medium.com/@bszwej/crafting-production-ready-backup-as-a-service-solution-using-akka-streams-130725df20cb)
 - [Crafting production-ready Backup as a Service solution using Akka Streams: part 2](https://medium.com/@bszwej/crafting-production-ready-backup-as-a-service-solution-using-akka-streams-part-2-5ac84ca45b47)
 
-## Ingredients
-- akka-stream
-- akka-stream-alpakka-s3
-- mongodb-driver-reactivestreams
+## Dependencies
+
+- Akka Streams
+- Alpakka S3 connector
+- MongoDB Reactive Streams driver
 
 ## Running
 
@@ -19,13 +20,13 @@ The scenario located in `Main` is the following:
 
 1. Perform backup to S3.
 1. Drop the collection.
-1. Perform restore operation.
+1. Perform restore.
 
 In order to run it:
 
 1. Go to `application.conf` and fill the missing properties.
 
-2. Run your MongoDB locally and prepare the database and collection with some documents. You can quickly [run MongoDB as well as MongoShell using Docker](https://hub.docker.com/_/mongo/).
+2. Run MongoDB locally and prepare the database and collection with some documents. You can quickly [run MongoDB as well as MongoShell using Docker](https://hub.docker.com/_/mongo/).
 
     Run MongoDB:
     ```sh
@@ -50,7 +51,7 @@ In order to run it:
 
 ## MongoDB basics
 
-The following block presents a basic set of MongoDB commands useful when playing with backup/restore streams.
+The following snippet presents a basic set of MongoDB commands useful when playing with backup/restore streams.
 
 ```sh
 > show dbs
