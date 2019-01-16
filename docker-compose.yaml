@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+
+  minio:
+    image: minio/minio
+    volumes:
+      - /tmp/data:/data
+      - /tmp/config:/root/.minio
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
+    command: server /data
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"

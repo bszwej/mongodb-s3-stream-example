@@ -1,5 +1,6 @@
 package io.bszwej
 
+import akka.Done
 import akka.stream.Materializer
 import akka.stream.alpakka.s3.scaladsl.S3Client
 import akka.stream.scaladsl.{Compression, JsonFraming, Sink, Source}
@@ -10,13 +11,14 @@ import org.bson.Document
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
+import scala.concurrent.Future
 
 class RestoreStream(collection: MongoCollection[Document], s3Client: S3Client, bucket: String, fileName: String) {
 
   private val maximumObjectLength = 16000000
   private val bulkSize = 100
 
-  def run(implicit m: Materializer) = {
+  def run(implicit m: Materializer): Future[Done] = {
     val (s3Source, _) = s3Client.download(bucket, fileName)
 
     s3Source

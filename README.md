@@ -1,8 +1,9 @@
-# MongoDB backup and restore to/from Amazon S3 using Akka Streams
+# MongoDB backup and restore
 
-This is an example of using Akka Streams and Alpakka to stream:
- - MongoDB collection to AWS S3.
- - File containing Extended JSONs stored on AWS S3 to MongoDB collection.
+This is an example of using Akka Streams to:
+
+1. Backup MongoDB collection to AWS S3.
+1. Restore it from AWS S3 back to MongoDB.
 
 This example contains a full runnable code presented in a two-part article:
  - [Crafting production-ready Backup as a Service solution using Akka Streams](https://medium.com/@bszwej/crafting-production-ready-backup-as-a-service-solution-using-akka-streams-130725df20cb)
@@ -16,38 +17,47 @@ This example contains a full runnable code presented in a two-part article:
 
 ## Running
 
-The scenario located in `Main` is the following:
+The scenario located in the `Main` is the following:
 
-1. Perform backup to S3.
+1. Perform a backup to S3.
 1. Drop the collection.
-1. Perform restore.
+1. Perform a restore.
 
-In order to run it:
+This project uses [Minio](https://www.minio.io/), a fully compatible S3 object storage, to replace Amazon S3. It's being ran locally in a docker-compose along with MongoDB. That's why you'll be able to run this example in less than a minute!
 
-1. Go to `application.conf` and fill the missing properties.
+Steps to run the example:
 
-2. Run MongoDB locally and prepare the database and collection with some documents. You can quickly [run MongoDB as well as MongoShell using Docker](https://hub.docker.com/_/mongo/).
-
-    Run MongoDB:
+1. Create dirs 
     ```sh
-    docker run -p 27017:27017 --name backup-mongo -d mongo
+    mkdir -p /tmp/data/mybucket /tmp/config
     ```
-    
-    Run Mongo shell:
+
+1. Run Minio and MongoDB 
+    ```sh 
+    docker-compose up -d
+    ```
+
+1. Run Mongo shell 
     ```sh
     docker run -it --net host --rm mongo sh -c 'exec mongo "localhost:27017"'
     ```
-    
-    Insert a document:
+
+1. Insert a document
     ```sh
     > use CookieDB
     switched to db CookieDB
-    
+
     > db.cookies.insert({"name" : "cookie1", "delicious" : true})
     WriteResult({ "nInserted" : 1 })
     ```
 
-3. `sbt run`
+1. `sbt run`
+    In the default scenario, the collection is being backed up to Minio, removed from Mongo and restored. You can go to http://127.0.0.1:9000/minio/mybucket/ (login: `minio_access_key`, password: `minio_secret_key`) and see the backup file (`backup.json`).
+
+1. Clean up afterwards
+    ```bash
+    docker-compose down
+    ```
 
 ## MongoDB basics
 
