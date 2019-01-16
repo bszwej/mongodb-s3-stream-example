@@ -52,6 +52,7 @@ Steps to run the example:
     ```
 
 1. `sbt run`
+
     In the default scenario, the collection is being backed up to Minio, removed from Mongo and restored. You can go to http://127.0.0.1:9000/minio/mybucket/ (login: `minio_access_key`, password: `minio_secret_key`) and see the backup file (`backup.json`).
 
 1. Clean up afterwards
